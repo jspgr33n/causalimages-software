@@ -10,6 +10,6 @@
   # note: This function requires an Internet connection
   # you can find out a list of conda Python paths via:
   # system("which python")
-  causalimages::BuildBackend(conda = "/Users/cjerzak/miniforge3/bin/python")
+  causalimages::BuildBackend(conda = "auto")
 }
 
