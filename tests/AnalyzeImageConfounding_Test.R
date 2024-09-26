@@ -3,7 +3,7 @@
   ################################
   # Image confounding tutorial using causalimages
   ################################
-  setwd("~/Downloads/")
+  # setwd("~/Desktop/QTM-495")
 
   # remote install latest version of the package if needed
   # devtools::install_github(repo = "cjerzak/causalimages-software/causalimages")
@@ -52,7 +52,7 @@
   }
 
   # write tf record
-  TFRecordName_im <- "./ImageTutorial/TutorialData_im.tfrecord"
+  TFRecordName_im <- "~/ImageTutorial/TutorialData_im.tfrecord"
   if( reSaveTFRecord ){
     causalimages::WriteTfRecord(
       file = TFRecordName_im,
@@ -61,31 +61,33 @@
   }
 
   for(ImageModelClass in (c("VisionTransformer","CNN"))){
-  for(optimizeImageRep in c(T,F)){
-  print(sprintf("Image confounding analysis & optimizeImageRep: %s & ImageModelClass: %s",optimizeImageRep, ImageModelClass))
-  ImageConfoundingAnalysis <- causalimages::AnalyzeImageConfounding(
-    obsW = obsW[ take_indices ],
-    obsY = obsY[ take_indices ],
-    X = X[ take_indices,apply(X[ take_indices,],2,sd)>0],
-    long = LongLat$geo_long[ take_indices ],  # optional argument
-    lat = LongLat$geo_lat[ take_indices ], # optional argument
-    imageKeysOfUnits = KeysOfObservations[ take_indices ],
-    file = TFRecordName_im,
-
-    batchSize = 16L,
-    nBoot = 5L,
-    optimizeImageRep = optimizeImageRep,
-    ImageModelClass = ImageModelClass,
-    nDepth_ImageRep = ifelse(optimizeImageRep, yes = 1L, no = 1L),
-    nWidth_ImageRep = as.integer(2L^6),
-    LEARNING_RATE_BASE = 0.001, nSGD = 10L, #
-    dropoutRate = NULL, # 0.1,
-    plotBands = c(1,2,3),
-    plotResults = T, figuresTag = "ConfoundingImTutorial",
-    figuresPath = "~/Downloads/ImageTutorial")
-    try(dev.off(), T)
-  #ImageConfoundingAnalysis$ModelEvaluationMetrics
-  }
+    for(optimizeImageRep in c(T,F)){
+    print(sprintf("Image confounding analysis & optimizeImageRep: %s & ImageModelClass: %s",optimizeImageRep, ImageModelClass))
+    ImageConfoundingAnalysis <- causalimages::AnalyzeImageConfounding(
+      obsW = obsW[ take_indices ],
+      obsY = obsY[ take_indices ],
+      X = X[ take_indices,apply(X[ take_indices,],2,sd)>0],
+      long = LongLat$geo_long[ take_indices ],  # optional argument
+      lat = LongLat$geo_lat[ take_indices ], # optional argument
+      imageKeysOfUnits = KeysOfObservations[ take_indices ],
+      file = TFRecordName_im,
+  
+      batchSize = 16L,
+      nBoot = 5L,
+      optimizeImageRep = optimizeImageRep,
+      # ImageModelClass = ImageModelClass,
+      nDepth_ImageRep = ifelse(optimizeImageRep, yes = 1L, no = 1L),
+      nWidth_ImageRep = as.integer(2L^6),
+      # LEARNING_RATE_BASE = 0.001, 
+      nSGD = 10L, #
+      dropoutRate = NULL, # 0.1,
+      plotBands = c(1,2,3),
+      plotResults = T, 
+      figuresTag = "ConfoundingImTutorial",
+      figuresPath = "~/Downloads/ImageTutorial")
+      try(dev.off(), T)
+    #ImageConfoundingAnalysis$ModelEvaluationMetrics
+    }
   }
 
   # ATE estimate (image confounder adjusted)
@@ -125,7 +127,7 @@
     }
 
   # write tf record
-  TFRecordName_imSeq <- "./ImageTutorial/TutorialData_imSeq.tfrecord"
+  TFRecordName_imSeq <- "~/ImageTutorial/TutorialData_imSeq.tfrecord"
   if( reSaveTFRecord ){
       causalimages::WriteTfRecord(
         file = TFRecordName_imSeq,
@@ -156,7 +158,7 @@
       nBoot = 5L,
       plotBands = c(1,2,3),
       plotResults = T, figuresTag = "ConfoundingImSeqTutorial",
-      figuresPath = "~/Downloads/ImageTutorial") # figures saved here
+      figuresPath = "~/Desktop/QTM-495/ImageTutorial") # figures saved here
       try(dev.off(), T)
   }
   }

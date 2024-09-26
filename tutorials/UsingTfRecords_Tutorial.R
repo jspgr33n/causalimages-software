@@ -69,7 +69,7 @@
   #take_indices <- 1:length( obsY )
 
   # set tfrecord save location (safest using absolute path)
-  tfrecord_loc <- "~/Downloads/ExampleRecord.tfrecord"
+  tfrecord_loc <- "~/Desktop/QTM-495/causalimages-software/tutorials/tfrecord/ExampleRecord.tfrecord"
 
   # tfrecord_loc <- "ExampleRecord.tfrecord"
 
@@ -83,7 +83,33 @@
   causalimages::WriteTfRecord(  file = tfrecord_loc,
                   uniqueImageKeys = unique( KeysOfObservations[ take_indices ] ),
                   acquireImageFxn = acquireImageFromMemory )
-
+  
+  # Check that all image keys exist in the tfrecord
+  valid_keys <- KeysOfObservations[ take_indices ]
+  
+  if (length(valid_keys) == 0) {
+    stop("Error: No valid image keys found for the selected observations.")
+  }
+  
+  cat("Number of valid image keys found: ", length(valid_keys), "\n")
+  
+  # Function to check image dimensions
+  check_image_dimensions <- function(keys) {
+    for (key in keys) {
+      image <- acquireImageFromMemory(key)
+      if (is.null(image)) {
+        cat("Warning: Image with key", key, "is missing or corrupted.\n")
+      } else {
+        dims <- dim(image)
+        cat("Image dimensions for key", key, ": ", dims, "\n")
+      }
+    }
+  }
+  
+  # Apply the check for all valid keys
+  check_image_dimensions(valid_keys)
+  
+  
   # perform causal inference with image and tabular confounding -- toy example for illustration purposes
   ImageConfoundingAnalysis <- causalimages::AnalyzeImageConfounding(
     obsW = obsW[ take_indices ],
@@ -97,7 +123,7 @@
     nSGD = 200L,
     plotBands = c(1,2,3),
     figuresTag = "TutorialExample",
-    figuresPath = "~/Downloads/TFRecordTutorial" # figures saved here (use absolute file paths)
+    figuresPath = "~/Desktop/QTM-495/causalimages-software/tutorials/figures" # figures saved here (use absolute file paths)
   )
 
   # ATE estimate (image confounder adjusted)

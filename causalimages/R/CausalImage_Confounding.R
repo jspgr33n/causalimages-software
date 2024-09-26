@@ -100,7 +100,7 @@ AnalyzeImageConfounding <- function(
     library(reticulate)
     #print("TEST"); source("~/Downloads/scratch_fix_claygpu.R", local = sourceLocal)
     
-    print2("Establishing connection to computational environment (build via causalimages::BuildBackend())")
+    print2("Establishing connection to computational environment (build via causalimages::BuildBackend())TESTING")
     if(!is.null(conda_env)){
       try(reticulate::use_condaenv(conda_env, required = conda_env_required),T)
     }

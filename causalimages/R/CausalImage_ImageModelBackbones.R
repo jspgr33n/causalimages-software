@@ -945,8 +945,10 @@ GetImageRepresentations <- function(
 
   rm(ModelList, StateList, MPList); gc()
   
+  print2(getwd())
+  
   # sanity check 
-  # if(any(is.na(Representations))){stop("Stopping due to missingness in output Representations [Code reference: ImageModelBackbone.R]")}
+  if(any(is.na(Representations))){stop("Stopping due to missingness in output Representations [Code reference: ImageModelBackbone.R]")}
   
   if(returnContents){
    return( list( "ImageRepresentations"= Representations,
