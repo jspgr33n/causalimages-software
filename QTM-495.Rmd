@@ -1,0 +1,82 @@
+---
+title: "qtm-495"
+output: html_document
+date: "2024-09-20"
+author: "James Park"
+---
+
+```{r}
+# outcome, treatment, and covariate information: 
+summary( obsW <- causalimages::obsW ) # treatment vector 
+summary( obsY <- causalimages::obsY ) # outcome vector 
+summary( LongLat <- causalimages::LongLat ) # long-lat coordinates for each unit
+summary( X <- causalimages::X ) # other covariates 
+
+# image information: 
+dim( FullImageArray <- causalimages::FullImageArray ) # dimensions of the full image array in memory 
+head( KeysOfImages <- causalimages::KeysOfImages ) # unique image keys associated with the images in FullImageArray
+head( KeysOfObservations <- causalimages::KeysOfObservations ) # image keys of observations to be associated to images via KeysOfImages
+```
+
+```{r}
+# plot the second band of the third image
+causalimages::image2(FullImageArray[3,,,2])
+
+# plot the first band of the first image
+causalimages::image2(FullImageArray[1,,,1])
+```
+
+```{r}
+acquireImageFromMemory <- function(keys){
+  # here, the function input keys
+  # refers to the unit-associated image keys
+  m_ <- FullImageArray[match(keys, KeysOfImages),,,]
+
+  # if keys == 1, add the batch dimension so output dims are always consistent
+  # (here in image case, dims are batch by height by width by channel)
+  if(length(keys) == 1){
+    m_ <- array(m_,dim = c(1L,dim(m_)[1],dim(m_)[2],dim(m_)[3]))
+  }
+  return( m_ )
+}
+
+OneImage <- acquireImageFromMemory(sample(KeysOfObservations,1))
+dim( OneImage )
+
+ImageSample <- acquireImageFromMemory(sample(KeysOfObservations,10))
+dim( ImageSample )
+
+# plot image: it's always a good idea 
+# to check the images through extensive sanity checks
+# such as your comparing satellite image representation
+# against those from OpenStreetMaps or Google Earth. 
+causalimages::image2( ImageSample[3,,,1] )
+```
+
+```{r}
+causalimages::WriteTfRecord(  file = "~/Downloads/CausalIm.tfrecord",
+                  uniqueImageKeys = unique( KeysOfObservations ),
+                  acquireImageFxn = acquireImageFromMemory )
+# Note: You first may need to call causalimages::BuildBackend() to build the backend (done only once)
+```
+
+```{r}
+ImageHeterogeneityResults <- causalimages::AnalyzeImageHeterogeneity(
+          # data inputs
+          obsW =  obsW,
+          obsY = obsY,
+          imageKeysOfUnits =  KeysOfObservations,
+          file = "~/Downloads/CausalIm.tfrecord", # this points to the tfrecord
+          X = X, 
+          
+          # inputs to control where visual results are saved as PDF or PNGs 
+          # (these image grids are large and difficult to display in RStudio's interactive mode)
+          plotResults = T,
+          figuresPath = "~/Downloads/CausalImagesTutorial",
+
+          # other modeling options
+          kClust_est = 2,
+          nSGD = 400L, # make this larger for full applications
+          batchSize = 16L)
+```
+
